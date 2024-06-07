@@ -129,10 +129,10 @@ async function getMessages(roomName) {
 //         createdAt: new Date()
 //     }
 // })
-const me = new User({
-    name: 'Dev',
-    roomName: 'Room3'
-})
+// const me = new User({
+//     name: 'Dev',
+//     roomName: 'Room3'
+// })
 
 // me.save().then((response)=>{
 //     //console.log(response);
