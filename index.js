@@ -5,11 +5,16 @@ const socketio = require('socket.io')
 const Filter = require('bad-words')
 const { generateMessage, generateLocationMessage } = require('./src/utils/messages')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./src/utils/users')
-const { getMessages, createRoom,sendMessage } = require('./src/utils/UserModel')
+const { getMessages, createRoom, sendMessage } = require('./src/utils/UserModel')
 
 const app = express()
 const server = http.createServer(app)
-const io = socketio(server)
+const io = socketio(server, {
+    cors: {
+        origin: "https://chat-eore8puk7-dev-chauhans-projects.vercel.app",
+        methods: ["GET", "POST"]
+    }
+})
 
 const port = process.env.PORT || 3000
 const publicDirectoryPath = path.join(__dirname, '/public')
@@ -26,38 +31,33 @@ io.on('connection', (socket) => {
             return callback(error)
         }
 
-createRoom({
-    roomName: user.room,
-    roomCode: '1234'
-}).then((response) => {
-    console.log(response);
-    isExist = true;
-
-    // Now that the room has been created, get the messages
-    return getMessages(user.room); // Assuming getMessages returns a promise
-}).then((messages) => {
-    console.log(messages);
-    if (messages && messages.length >  0) {
-        messages.forEach((message) => {
-            socket.emit('message', generateMessage(message.username, message.message));
+        createRoom({
+            roomName: user.room,
+            roomCode: '1234'
+        }).then((response) => {
+            console.log('Room creation response:', response);
+            return getMessages(user.room);
+        }).then((messages) => {
+            console.log('Messages:', messages);
+            if (messages && messages.length > 0) {
+                messages.forEach((message) => {
+                    socket.emit('message', generateMessage(message.username, message.message));
+                });
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
         });
-    }
-}).catch((error) => {
-    console.error('Error:', error);
-});
 
-socket.join(user.room);
-socket.emit('message', generateMessage('Admin', 'Welcome!'));
-        socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`))
+        socket.join(user.room);
+        socket.emit('message', generateMessage('Admin', 'Welcome!'));
+        socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.username} has joined!`));
         io.to(user.room).emit('roomData', {
             room: user.room,
             users: getUsersInRoom(user.room)
-        
-        })
+        });
 
-        callback()
-
-    })
+        callback();
+    });
 
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id)
@@ -74,17 +74,17 @@ socket.emit('message', generateMessage('Admin', 'Welcome!'));
                 message: message,
                 createdAt: new Date()
             }
-        })
+        });
 
         io.to(user.room).emit('message', generateMessage(user.username, message))
         callback()
-    })
+    });
 
     socket.on('sendLocation', (coords, callback) => {
         const user = getUser(socket.id)
         io.to(user.room).emit('locationMessage', generateLocationMessage(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
-    })
+    });
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)
@@ -96,9 +96,9 @@ socket.emit('message', generateMessage('Admin', 'Welcome!'));
                 users: getUsersInRoom(user.room)
             })
         }
-    })
-})
+    });
+});
 
 server.listen(port, () => {
     console.log(`Server is up on port ${port}!`)
-})
+});

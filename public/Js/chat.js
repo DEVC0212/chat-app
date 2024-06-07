@@ -116,7 +116,7 @@
 
 
 
-const socket = io()
+const socket = io('https://chat-eore8puk7-dev-chauhans-projects.vercel.app');
 
 // Elements
 const $messageForm = document.querySelector('#message-form')
