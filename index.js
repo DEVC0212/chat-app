@@ -26,25 +26,25 @@ io.on('connection', (socket) => {
             return callback(error)
         }
 
-// createRoom({
-//     roomName: user.room,
-//     roomCode: '1234'
-// }).then((response) => {
-//     console.log(response);
-//     isExist = true;
+createRoom({
+    roomName: user.room,
+    roomCode: '1234'
+}).then((response) => {
+    console.log(response);
+    isExist = true;
 
-//     // Now that the room has been created, get the messages
-//     return getMessages(user.room); // Assuming getMessages returns a promise
-// }).then((messages) => {
-//     console.log(messages);
-//     if (messages && messages.length >  0) {
-//         messages.forEach((message) => {
-//             socket.emit('message', generateMessage(message.username, message.message));
-//         });
-//     }
-// }).catch((error) => {
-//     console.error('Error:', error);
-// });
+    // Now that the room has been created, get the messages
+    return getMessages(user.room); // Assuming getMessages returns a promise
+}).then((messages) => {
+    console.log(messages);
+    if (messages && messages.length >  0) {
+        messages.forEach((message) => {
+            socket.emit('message', generateMessage(message.username, message.message));
+        });
+    }
+}).catch((error) => {
+    console.error('Error:', error);
+});
 
 socket.join(user.room);
 socket.emit('message', generateMessage('Admin', 'Welcome!'));
@@ -67,14 +67,14 @@ socket.emit('message', generateMessage('Admin', 'Welcome!'));
             return callback('Profanity is not allowed!')
         }
 
-        // sendMessage({
-        //     roomName: user.room,
-        //     message: {
-        //         username: user.username,
-        //         message: message,
-        //         createdAt: new Date()
-        //     }
-        // })
+        sendMessage({
+            roomName: user.room,
+            message: {
+                username: user.username,
+                message: message,
+                createdAt: new Date()
+            }
+        })
 
         io.to(user.room).emit('message', generateMessage(user.username, message))
         callback()
