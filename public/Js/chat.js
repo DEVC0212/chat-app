@@ -116,7 +116,7 @@
 
 
 
-const socket = io();
+const socket = io('https://chat-app-alpha-lovat.vercel.app/');
 
 // Elements
 const $messageForm = document.querySelector('#message-form')
