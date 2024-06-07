@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://devchauhan0212:HQlES1pAid4wvkYa@cluster0.x9hnu8a.mongodb.net/chat-app');
+mongoose.connect('mongodb+srv://devchauhan0212:HQlES1pAid4wvkYa@cluster0.x9hnu8a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
 
 const User = mongoose.model('User',{
     name: {
@@ -145,3 +145,7 @@ module.exports = {
     sendMessage,
     getMessages
 }
+
+
+
+

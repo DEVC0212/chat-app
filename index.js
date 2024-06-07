@@ -9,12 +9,7 @@ const { getMessages, createRoom, sendMessage } = require('./src/utils/UserModel'
 
 const app = express()
 const server = http.createServer(app)
-const io = socketio(server, {
-    cors: {
-        origin: "https://chat-app-ashen-phi.vercel.app",
-        methods: ["GET", "POST"]
-    }
-})
+const io = socketio(server);
 
 const port = process.env.PORT || 3000
 const publicDirectoryPath = path.join(__dirname, '/public')
